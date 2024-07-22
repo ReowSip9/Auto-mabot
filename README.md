@@ -1,92 +1,73 @@
-# Bot for Ragnarok Online
+บอทสำหรับ Ragnarok Online
+เกี่ยวกับ
+พัฒนาสำหรับเซิร์ฟเวอร์ส่วนตัวRagna4th
 
-## About
+วัตถุประสงค์ของโปรเจ็กต์นี้คือการเรียนรู้การวิศวกรรมย้อนกลับและ Windows API ใน Python ซึ่งเป็นซอฟต์แวร์ภายนอกที่อ่านหน่วยความจำเกมและส่งอินพุต
 
-Developed for [Ragna4th](https://www.ragna4th.com/) private server.
+คุณสมบัติ
+มาโคร:มาโครที่เข้ารหัสแบบฮาร์ดโค้ดซึ่งรองรับการส่งคีย์สโตรกและคลิกเมาส์โดยตรงไปยังหน้าต่างเกม การคลิกเมาส์ไม่สามารถส่งไปยังตำแหน่งที่ระบุได้หากหน้าต่างไม่ได้อยู่ด้านบน แต่การคลิกนั้นได้รับการลงทะเบียนไว้ มีประโยชน์สำหรับการสแปมทักษะบนเท้าตัวละครของคุณในขณะที่กด Alt-Tab แมโครจะทำงานในเธรดแยกต่างหากเนื่องจากมีการหน่วงเวลาและสามารถเปิด/ปิดได้
+ข้อมูลเกม:อ่านข้อมูลเกมที่จำเป็นในการดำเนินการ เช่น ชื่อตัวละคร ชื่อแผนที่ปัจจุบัน พิกัดแผนที่ HP ปัจจุบัน HP สูงสุด
+(อยู่ระหว่างดำเนินการ) การเดิน:เกมจะจัดเก็บข้อมูลแผนที่บางส่วนไว้ในไฟล์ .gat ไฟล์เหล่านี้ถูกแยกออกมาจากเกมและอ่านออกมาเพื่อสร้างกราฟที่แสดงให้เห็นว่าแต่ละเซลล์ของแผนที่สามารถเดินได้หรือไม่ แผนที่ส่วนใหญ่สามารถมีขนาดได้ถึง 400x400 แต่ข้อมูลนี้จะปรากฏอยู่ในไฟล์ .gat ด้วย
+รายการเอนทิตี้:อ่านเอนทิตี้ปัจจุบัน (ผู้เล่น, NPC, มอนสเตอร์...) บนหน้าจอ จะถูกใช้ในอนาคตเพื่อต่อสู้กับมอนสเตอร์
+การคอมไพล์ไฟล์ c++ เป็น dll
+ไฟล์ c++ สามารถคอมไพล์ได้ด้วยคอมไพเลอร์ c++ ตัวใดก็ได้ ตราบใดที่แพลตฟอร์มเป้าหมายเป็น Windows แบบ 64 บิต
 
-The purpose of this project is to learn reverse engineering and Windows API in Python. It's an external software that reads the game memory and sends inputs.
+การใช้MSVCสามารถคอมไพล์ได้ดังนี้: cl.exe /LD /EHsc helpers/shortest_path.cpp
 
-## Features
+วาง dll ไว้ใน โฟลเดอร์ helpersคุณสามารถตรวจสอบว่าฟังก์ชันถูกส่งออกอย่างถูกต้องหรือไม่โดยใช้dumpbin /exports helpers/shortest_path.dll. ผลลัพธ์จะต้องส่งออกเป็นMy_ShortestPath.
 
-- **Macro:** hardcoded macro that supports sending keystrokes and mouse clicks directly to the game window. The mouse click can't be sent to a specific location if the window is not on top, but the click is registered. Useful for spamming a skill on you character feet while alt-tabbing. It runs in a separate thread because of the delays on it and can be toggled on/off.
-- **Game information:** reads game information that is needed for executing actions, such as the character name, current map name, map coordinates, current hp, maximum hp.
-- (In progress) **Walking:** the game stores some map information the .gat files. These files were extracted from the game and read, creating a graph with whether each map cell is walkable of not. Most of the maps can be up to 400x400, but this information is also present in the .gat file.
-- **Entity list:** reads the current entities (players, npcs, monsters...) in the screen. Will be used in the future for fighting monsters.
+เอกสารประกอบ
+ส่วนนี้จะประกอบด้วยเอกสารประกอบเกี่ยวกับกระบวนการย้อนวิศวกรรมเกม โดยกระบวนการย้อนวิศวกรรมทั้งหมดดำเนินการโดยใช้Cheat Engine 7.5 (CE) (เวอร์ชัน 32 บิต เนื่องจาก Ragnarok Online เป็นเวอร์ชัน 32 บิต) ไม่สามารถแนบโปรแกรมดีบักเกอร์เข้ากับกระบวนการเกมได้เนื่องจากGepard Shieldและโปรแกรมดีบักเกอร์ DBVM ของ CE ทำให้เกิด BSOD เมื่อโหลดเท่านั้น อาจเป็นเพราะฉันใช้ CPU ของ AMD
 
-## Compiling the c++ file to dll
-The c++ file can be compiled with any c++ compiler, as long as the target platform is 64bit Windows.
+ผู้เล่นท้องถิ่น
+ค่าออฟเซ็ตของผู้เล่นในพื้นที่นั้นสามารถค้นหาได้โดยค้นหาค่าใน CE ค่าแรกคือชื่อผู้เล่น ชื่อแผนที่ปัจจุบัน พิกัด HP ปัจจุบัน และ HP สูงสุด ซึ่งค่อนข้างตรงไปตรงมา ด้านล่างนี้คือตัวอย่างค่าออฟเซ็ตคงที่ที่พบสำหรับพิกัด x ของผู้เล่น พิกัด x ของผู้เล่นท้องถิ่น ในกรณีนี้ ค่าแรกคือพิกัดผู้เล่นจริง ค่ากลางเปลี่ยนไปและไม่ตรงกับค่าที่ถูกต้องหลังจากผ่านไปสองสามวินาที จึงถูกละทิ้งไป ค่าสุดท้ายไม่ใช่พิกัดผู้เล่นจริง แต่เป็นพิกัดที่ผู้เล่นกำลังเคลื่อนที่ การใช้ค่านี้ส่งผลให้เกิดปัญหาเมื่อเคลื่อนย้ายตัวละคร เนื่องจากค่านี้ไม่ได้แสดงตำแหน่งของตัวละครแบบเรียลไทม์ ความแตกต่างระหว่างที่อยู่แรกและที่อยู่สุดท้ายสามารถมองเห็นได้โดยการย้ายตัวละคร ค่าแรกจะเปลี่ยนแปลงอย่างต่อเนื่องในขณะที่ตัวละครกำลังเคลื่อนที่ ในขณะที่ค่าสุดท้ายจะเปลี่ยนแปลงหนึ่งครั้งเมื่อคลิกตำแหน่งใหม่
 
-Using [MSVC](https://learn.microsoft.com/en-us/cpp/build/reference/compiler-options?view=msvc-170), it can be compiled with:
-`cl.exe /LD /EHsc helpers/shortest_path.cpp`
+โลก
+โลกเป็นโครงสร้างที่เก็บข้อมูลพื้นฐานทั้งหมดเพื่อให้เกมทำงานได้ เช่น ตัวชี้ไปยังผู้เล่นในพื้นที่และตัวชี้ไปยังรายการเอนทิตี โดยพบสิ่งนี้ขณะกำลังสแกนตัวชี้ในรายการเอนทิตี
 
-Put the dll in the _helpers_ folder. You can check if the function is being exported correctly with `dumpbin /exports helpers/shortest_path.dll`. The output must export `My_ShortestPath`.
+ตัวตน
+เพื่อค้นหาที่อยู่ของเอนทิตี้ ฉันเริ่มต้นด้วยการโจมตีพวกมัน (เพื่อให้พวกมันติดตามตัวละครของฉัน) จากนั้นจึงค้นหาพิกัด x ของพวกมันใน CE ฉันเคลื่อนที่และค้นหาพิกัดใหม่จนกระทั่งมีที่อยู่เพียงไม่กี่แห่ง
 
-## Documentation
+เอนทิตี้ 1
 
-This section will contain the documentation of the process of reverse engineering the game.The whole reverse engineering was made using [Cheat Engine](https://www.cheatengine.org/) 7.5 (CE) (32-bit version, because Ragnarok Online is 32-bit). No debugger could be attached to the game process because of [Gepard Shield](https://rathena.org/board/thirdpartyservices/gepard-shield-30-r41/), and CE's DBVM debugger only caused BSOD when it was loaded, probably because I am on an AMD CPU.
+ที่อยู่ในช่วง 0x18XXX ดูเหมือนจะไม่ใช่ส่วนหนึ่งของโครงสร้างเอนทิตี ทั้งหมดเป็นเพียงพิกัด x + อะไรสักอย่าง + พิกัด y ที่ล้อมรอบด้วยค่าที่ดูเหมือนจะไม่ใช่ส่วนหนึ่งของเอนทิตี
 
-### Local Player
+เอนทิตี้ 2
 
-Local players offsets were found by searching their values on CE. The first values were the player name, current map name, coordintes, current HP and maximum HP. It was pretty straightforward. Below is an example of the static offset found for the player's x coordinate.
-![Local player x coordinate](img/player_x_offset.png)
-In this case, the first one was the actual player coordinate. The middle one changed and did not match the correct value after a few seconds, so it was discarded. The last one was was not the actual player coordinate, but the coordinate that the player was moving to. Using it resulted in problems when moving the character, because it did not represent the character location in real time. The difference between the first and the last address could be seend by moving the character. The first value was continously changing while the character we moving, while the last one change once when a new location was clicked.
+อย่างไรก็ตาม สองตัวสุดท้ายที่ไม่ใช่ตัวสุดท้ายก็ดูไม่ถูกต้องเช่นกัน เป็นเพียงพิกัด x และ y ที่ล้อมรอบด้วยข้อความมากมายซึ่งดูเหมือนข้อความแชทบนหน้าจอ
 
-### World
+เอนทิตี้ 3
 
-The world is a struct that holds all basic information for the game to work, such as pointers to the local player and pointer to the entity list. It was found while pointer scanning the entity list.
+ตัวสุดท้ายคือตัวที่ถูกต้อง ค่ารอบ ๆ พิกัด x เปลี่ยนแปลงไปตามการโจมตีของมอนสเตอร์ และฉันสามารถเห็นค่า 1138 อยู่ด้านบนพิกัดสองสามไบต์ ซึ่งเป็น ID ของมอนสเตอร์ตาม ฐาน ข้อมูลเกม
 
-### Entity
+เอนทิตี้ 4
 
-To find an entity address, I started by attacking them (so they followed my character) and then searched for their x coordinate in CE. I moved and searched for the new coordinate until I had only a few addressess.
+หลังจากสแกนที่อยู่นี้ด้วยตัวชี้แล้ว ฉันสามารถเห็นว่าค่าออฟเซ็ตของพิกัด x คือ 0x16C หลังจากลองผิดลองถูกมาบ้าง ด้วยเหตุนี้ ฉันจึงสามารถค้นหาที่อยู่ฐานของสัตว์ประหลาดได้โดยค้นหาพิกัด x แล้วลบ 0x16C
 
-![Entity 1](img/entity_1.png)
+เอนทิตี้ 5
 
-The addresses in the 0x18XXX range did not seem to be part of an entity struct. All of them were just x coordinate + something + y coordinate surrounded by values that did not seem to be part of an entity.
+รายชื่อนิติบุคคล
+หลังจากผ่านไปหลายชั่วโมง ก็พบรายการเอนทิตี้ ซึ่งเป็นรายการที่มีลิงก์คู่พร้อมตัวชี้ไปยังเอนทิตี้ทุกตัวบนหน้าจอ เอนทิตี้อาจเป็นผู้เล่น สัตว์ประหลาด NPC พอร์ทัล หรือสัตว์เลี้ยง (อาจเป็นสิ่งของอื่นๆ ได้อีก)
 
-![Entity 2](img/entity_2.png)
+ในการค้นหารายการเอนทิตี้ ฉันเริ่มต้นด้วยการค้นหาที่อยู่ฐานของมอนสเตอร์บางตัวบนหน้าจอ จากนั้น ฉันสแกนพวกมันด้วยตัวชี้และเปรียบเทียบผลลัพธ์ หลังจากลองผิดลองถูกหลายครั้ง ฉันพบว่า [0xB3D1D4 + 0xCC] + 0x10 คือค่าที่ถูกต้อง รายการเอนทิตี้สามารถกำหนดได้ดังนี้:
 
-However, the last two last but ones also did not look the right ones, they were only the x and y coordinates surrounded by a lot of text that looked like the chat messages in the screen.
-
-![Entity 3](img/entity_3.png)
-
-The last one was the right one. The values around the x coordinate changed accordingly to the monster's attacks and I could see the value 1138 a few bytes above the coordinates, which is the monster id according to the [game database](https://ratemyserver.net/index.php?mob_name=1138&page=re_mob_db&quick=1&f=1&mob_search=Search).
-
-![Entity 4](img/entity_4.png)
-
-After pointer scanning this address, I could see that the offset to the x coordinate was 0x16C after some trial and error. With that, I could find the base address of the monsters by searching for the x coordinate and subtracting 0x16C.
-
-![Entity 5](img/entity_5.png)
-
-### Entity List
-
-After lots of hours, the entity list was found. It is a double linked list with pointers to every entity in the screen. Entities can be players, monsters, npcs, portals or pets (they can probably be more things).
-
-To find the entity list, I started by finding the base address of some monsters in my screen. Then, I pointer scanned them and compared the results. After a lot of trial and error I found that [0xB3D1D4 + 0xCC] + 0x10 was the right one. The entity list could be defined as:
-
-```
 struct EntityList {      // Offset
    EntityList* next;     // 0
    EntityList* prev;     // 4
    Entity* entity;       // 8
 };
-```
+ตัวชี้แต่ละตัวจะชี้ไปยังโครงสร้างที่ยังไม่ทราบแน่ชัด แต่ค่าออฟเซ็ต 0x8 มักจะชี้ไปยังสิ่งที่เราเรียกว่าเอนทิตี้ในโปรเจ็กต์นี้ แอตทริบิวต์อื่นๆ จากโครงสร้างนี้ดูเหมือนจะมีข้อมูลสไปรต์และตัวชี้ไปยังโครงสร้าง HP ของมอนสเตอร์
 
-Each pointer pointed to a struct that is not completely known yet, but the offset 0x8 is always a pointer to what we called Entity in this project. Other attributes from this struct seem to hold sprite information and pointer to monster HP struct.
+รายชื่อนิติบุคคล 1 รายชื่อนิติบุคคล 2
 
-![Entity list 1](img/entity_list_1.png)
-![Entity list 2](img/entity_list_2.png)
+แผนที่
+ไฟล์.gat ถูกแยกออกมาจาก ไฟล์ data.grfของเกมโดยใช้โปรแกรมแก้ไข GRF นี้จากนั้นบทความนี้จาก Openkore wikiจะอธิบายวิธีการแยกไฟล์ หลังจากข้ามส่วนหัว (6 ไบต์) ความกว้างและความสูงของแผนที่จะถูกแยกออกมาจาก 8 ไบต์ถัดไป จากนั้น ส่วนที่เหลือของไฟล์จะถูกอ่านเป็นบล็อกขนาด 20 ไบต์ จากนั้นข้อมูลจะถูกแยกออกโดยใช้ไลบรารีstruct
 
-### Map
+ทำ
+[] เดินไปยังพิกัดนอกพื้นที่หน้าจอ โดยทั่วไปใช้ อัลกอริทึม A*เพื่อค้นหาเส้นทางที่สั้นที่สุดในกราฟแผนที่ที่อ่านจาก ไฟล์ .gatอาจใช้ทั้งใน Python และ C (โดยใช้Cython ) เพื่อเปรียบเทียบประสิทธิภาพ
 
-The _.gat_ files were extacted from the game's _data.grf_ using [this GRF editor](https://rathena.org/board/files/file/2766-grf-editor/). Then, [this article from Openkore wiki](https://openkore.com/wiki/Field_file_format) explained how to parse the file. After skipping the header (6 bytes), the width and height of the map were extracted from the next 8 bytes. Then, the rest of the file was read in blocks of 20 bytes, the data was unpacked using the _struct_ library.
+[] หยิบสิ่งของจากพื้นดิน
 
+[] การเดินจากที่ไหนก็ได้ไปยังที่ไหนก็ได้ อาจจะต้องดูไฟล์ Openkore เพื่อดูว่าข้อมูลเกี่ยวกับลิงก์แผนที่อยู่ที่ไหน (แผนที่ใดเชื่อมต่อกับแผนที่ใด)
 
-### TODO
-
-[] Walk to a coordinate outside of screen area. Basically use the [A*](https://www.geeksforgeeks.org/a-search-algorithm/) algorithm to find the shortest path in the map graph read from the _.gat_ files. Will probably be implemented both in Python and C (using [Cython](https://cython.org/)) for performance comparison.
-
-[] Pick up items from the ground.
-
-[] Walking from anywhere to anywhere. Will probably look into Openkore files to find where the information about map links are (which maps connect to which maps).
-
-[] Automatic storing/selling items.
+[] การจัดเก็บ/ขายของอัตโนมัติ
